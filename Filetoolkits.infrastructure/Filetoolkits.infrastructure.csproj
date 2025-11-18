@@ -1,0 +1,26 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="itext7" Version="7.2.6" />
+    <PackageReference Include="SkiaSharp" Version="3.119.1" />
+    <PackageReference Include="Syncfusion.DocIO.Net.Core" Version="27.1.48" />
+    <PackageReference Include="Syncfusion.DocIORenderer.Net.Core" Version="27.1.48" />
+    <PackageReference Include="Syncfusion.EJ2.PdfViewer.AspNet.Core" Version="27.1.48" />
+    <PackageReference Include="Syncfusion.Pdf.Imaging.Net.Core" Version="27.1.48" />
+    <PackageReference Include="Syncfusion.PdfToImageConverter.Net" Version="27.1.48" />
+    <PackageReference Include="Syncfusion.Presentation.Net.Core" Version="27.1.48" />
+    <PackageReference Include="Syncfusion.XlsIO.Net.Core" Version="27.1.48" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Filetoolkits.application\Filetoolkits.application.csproj" />
+    <ProjectReference Include="..\Filetoolkits.domain\Filetoolkits.domain.csproj" />
+  </ItemGroup>
+
+</Project>
