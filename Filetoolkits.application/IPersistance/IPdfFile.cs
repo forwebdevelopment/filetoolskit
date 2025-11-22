@@ -9,5 +9,6 @@ namespace Filetoolkits.application.IPersistance
     public interface IPdfFile
     {
          Task<string> PdfCompression(string filePath , string outputDir="");
+         Task<string> MergeMultiplePDFs(string[] filePaths);
     }
 }

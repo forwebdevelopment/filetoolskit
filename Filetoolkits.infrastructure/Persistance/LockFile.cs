@@ -5,21 +5,10 @@ using Syncfusion.DocIO;
 using Syncfusion.DocIO.DLS;
 using Syncfusion.Presentation;
 using Syncfusion.XlsIO;
-using System;
-using System;
-using System.Collections.Generic;
-using System.Collections.Generic;
-using System.Drawing;
-using System.IO;
-using System.Linq;
-using System.Linq;
-using System.Reflection.Metadata;
-using System.Reflection.PortableExecutable;
+
+
 using System.Text;
 
-using System.Threading.Tasks;
-using System.Threading.Tasks;
-using static System.Net.Mime.MediaTypeNames;
 
 namespace Filetoolkits.infrastructure.Persistance
 {

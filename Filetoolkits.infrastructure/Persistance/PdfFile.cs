@@ -3,6 +3,7 @@ using Syncfusion.Pdf;
 using Syncfusion.Pdf.Parsing;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -18,20 +19,32 @@ namespace Filetoolkits.infrastructure.Persistance
             try
             {
                  outputDir = Path.Combine(
-                   Path.GetDirectoryName(inputFilePath),
-                   "compressed_" + Path.GetFileName(inputFilePath)
-               );
+    Path.GetDirectoryName(inputFilePath),
+    "compressed_" + Path.GetFileName(inputFilePath)
+);
+
                 int imageQuality = 50;
-                using var fileStream = new FileStream(inputFilePath, FileMode.Open, FileAccess.Read);
-                PdfLoadedDocument pdfDocument = new PdfLoadedDocument(fileStream);  
-                PdfCompressionOptions Options = new PdfCompressionOptions();
-                Options.CompressImages = true;
-                Options.ImageQuality = Math.Clamp(imageQuality, 1, 100);
-                Options.RemoveMetadata = true;
-                Options.OptimizeFont = true;
-                pdfDocument.Compress(Options);
-                FileStream outputStream = new FileStream(outputDir, FileMode.Create, FileAccess.Write);
-                pdfDocument.Save(outputStream);
+
+                using (var fileStream = new FileStream(inputFilePath, FileMode.Open, FileAccess.Read))
+                using (var pdfDocument = new PdfLoadedDocument(fileStream))
+                {
+                    PdfCompressionOptions Options = new PdfCompressionOptions
+                    {
+                        CompressImages = true,
+                        ImageQuality = Math.Clamp(imageQuality, 1, 100),
+                        RemoveMetadata = true,
+                        OptimizeFont = true
+                    };
+
+                    pdfDocument.Compress(Options);
+
+                    using (var outputStream = new FileStream(outputDir, FileMode.Create, FileAccess.Write))
+                    {
+                        pdfDocument.Save(outputStream);
+                    }
+
+                    pdfDocument.Close(true);
+                }
 
                 return outputDir;
             }
@@ -41,39 +54,51 @@ namespace Filetoolkits.infrastructure.Persistance
             }
 
 
-            //int imageQuality = 50;
-
-            //if (!File.Exists(inputFilePath))
-            //    throw new FileNotFoundException("Input PDF file not found.", inputFilePath);
-
-            //if (!Directory.Exists(outputDir))
-            //    Directory.CreateDirectory(outputDir);
-
-            //using var fileStream = new FileStream(inputFilePath, FileMode.Open, FileAccess.Read);
-            //using var loadedDoc = new PdfLoadedDocument(fileStream);
-
-            //// Create output path
-            //string outputFilePath = Path.Combine(outputDir,
-            //    Path.GetFileNameWithoutExtension(inputFilePath) + "_page1.png");
-            //outputFilePath = Path.ChangeExtension(outputFilePath, ".pdf");
-
-            //// Use PdfSaveOptions for compression
-            //var saveOptions = new PdfCompressionOptions
-            //{
-            //    CompressImages = true,
-            //    ImageQuality = Math.Clamp(imageQuality, 1, 100), // 1..100
-            //    RemoveMetadata = true,
-            //    OptimizeFont = true
-            //};
-
-            //using var outStream = new FileStream(outputFilePath, FileMode.Create, FileAccess.Write);
-            //loadedDoc.Save(outStream, saveOptions);
-
-            //return outputFilePath;
 
 
 
 
         }
+
+        // filePaths = array/list of PDF file paths you want to merge
+        public async Task<string>MergeMultiplePDFs(string[] filePaths)
+        {
+            if (filePaths == null || filePaths.Length == 0)
+                throw new ArgumentException("No PDF files provided.");
+
+            string outputPath = Path.Combine(
+                Path.GetDirectoryName(filePaths[0]),
+                "mergedPdf.pdf"
+            );
+
+            try
+            {
+                using (PdfDocument finalDocument = new PdfDocument())
+                {
+                    foreach (string input in filePaths)
+                    {
+                        using (FileStream stream = new FileStream(input, FileMode.Open, FileAccess.Read))
+                        {
+                            using (PdfLoadedDocument loadedDoc = new PdfLoadedDocument(stream))
+                            {
+                                // Import all pages
+                                finalDocument.ImportPageRange(loadedDoc, 0, loadedDoc.Pages.Count - 1);
+                            }
+                        }
+                    }
+
+                    using (FileStream fs = new FileStream(outputPath, FileMode.Create, FileAccess.Write))
+                    {
+                        finalDocument.Save(fs);
+                    }
+                }
+
+                return outputPath;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Error merging PDFs: " + ex.Message, ex);
+            }
+        }
     }
-    }
+}
