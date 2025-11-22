@@ -66,30 +66,34 @@ namespace Filetoolkits.infrastructure.Persistance
             if (filePaths == null || filePaths.Length == 0)
                 throw new ArgumentException("No PDF files provided.");
 
-            string outputPath = Path.Combine(
-                Path.GetDirectoryName(filePaths[0]),
-                "mergedPdf.pdf"
-            );
+            //string outputPath = Path.Combine(
+            //    Path.GetDirectoryName(filePaths[0]),
+            //    "mergedPdf.pdf"
+            //);
 
             try
             {
+                string outputPath = Path.Combine(Path.GetTempPath(), Guid.NewGuid() + ".pdf");
+
                 using (PdfDocument finalDocument = new PdfDocument())
                 {
-                    foreach (string input in filePaths)
+                    foreach (var file in filePaths)
                     {
-                        using (FileStream stream = new FileStream(input, FileMode.Open, FileAccess.Read))
+                        using (FileStream fs = new FileStream(file, FileMode.Open, FileAccess.Read))
                         {
-                            using (PdfLoadedDocument loadedDoc = new PdfLoadedDocument(stream))
-                            {
-                                // Import all pages
-                                finalDocument.ImportPageRange(loadedDoc, 0, loadedDoc.Pages.Count - 1);
-                            }
+                            PdfLoadedDocument loaded = new PdfLoadedDocument(fs);
+
+                            finalDocument.ImportPageRange(loaded, 0, loaded.Pages.Count - 1);
+
+                            loaded.Close(true); // ✅ Close loaded doc BEFORE fs closes
                         }
+                        // ← Now fs is allowed to close
                     }
 
-                    using (FileStream fs = new FileStream(outputPath, FileMode.Create, FileAccess.Write))
+                    // Output must be open during save
+                    using (FileStream outStream = new FileStream(outputPath, FileMode.Create, FileAccess.Write))
                     {
-                        finalDocument.Save(fs);
+                        finalDocument.Save(outStream);  // ✔ No more ObjectDisposedException
                     }
                 }
 

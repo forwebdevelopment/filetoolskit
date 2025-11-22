@@ -10,6 +10,7 @@ namespace Filetoolkits.domain.Entity
     public class FileForm
     {
         public IFormFile File { get; set; }
+        public List<IFormFile> Files { get; set; }
     }
     public class LockFileParameter: FileForm
     {

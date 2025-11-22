@@ -1,4 +1,5 @@
 ﻿using Filetoolkits.application.PdfFile;
+using Filetoolkits.application.PdfFile.mergepdf;
 using Filetoolkits.domain.Entity;
 using MediatR;
 using Microsoft.AspNetCore.Http;
@@ -55,13 +56,10 @@ namespace Filetoolkits.Controllers
             if (files == null || files.Count == 0)
                 return BadRequest("No files uploaded");
 
-            var response = await _mediator.Send(new MergePdfQuery(new MergeFileForm
-            {
-                Files = files
-            }));
+            var response = await _mediator.Send(new MergePdfQuery(files));
 
             // Read merged PDF file
-            var mergedBytes = await System.IO.File.ReadAllBytesAsync(response.MergedFile);
+            var mergedBytes = await System.IO.File.ReadAllBytesAsync(response.LockFile);
 
             // Cleanup temp files after response completes
             Response.OnCompleted(() =>
@@ -73,8 +71,8 @@ namespace Filetoolkits.Controllers
                         Directory.Delete(response.TempFolder, true);
                     }
 
-                    if (System.IO.File.Exists(response.MergedFile))
-                        System.IO.File.Delete(response.MergedFile);
+                    if (System.IO.File.Exists(response.LockFile))
+                        System.IO.File.Delete(response.LockFile);
                 }
                 catch
                 {
@@ -87,7 +85,7 @@ namespace Filetoolkits.Controllers
             return File(
                 mergedBytes,
                 "application/pdf",
-                Path.GetFileName(response.MergedFile)
+                Path.GetFileName(response.LockFile)
             );
         }
 

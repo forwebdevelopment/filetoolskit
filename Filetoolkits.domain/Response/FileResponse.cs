@@ -10,5 +10,7 @@ namespace Filetoolkits.domain.Response
     {
         public string TempFile { get; set; }
         public string? LockFile { get; set; }
+
+        public string TempFolder { get; set; }
     }
 }
