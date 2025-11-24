@@ -142,11 +142,26 @@ namespace Filetoolkits.Controllers
                 // --- End Cleanup Logic ---
 
                 // Return the file response as a ZIP file
-                return File(
+
+                if(param.operation == "splitByPageSize")
+                {
+                    return File(
                     zipBytes,
                     "application/zip", // The correct MIME type for a ZIP file
                     zipFileName
                 );
+
+                }
+                else
+                {
+                    return File(
+               zipBytes,
+               "application/pdf",
+               Path.GetFileName(zipFilePath.LockFile)
+           );
+                }
+
+               
             }
             catch (Exception ex)
             {
