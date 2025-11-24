@@ -42,6 +42,35 @@ namespace Filetoolkits.infrastructure.Services
         }
 
 
+        public async Task<FileResponse> splitFilePath(SplitFileParam parameter)
+        {
+
+            string tempFolder = Path.GetTempPath();
+            string tempFile = Path.Combine(tempFolder, parameter.File.FileName);
+
+            using (var stream = new FileStream(tempFile, FileMode.Create))
+            {
+                await parameter.File.CopyToAsync(stream);
+            }
+
+            var response = "";
+            if (parameter.operation == "splitByPageSize")
+            {
+                response = await _pdfFile.SplitAndZipPdfByFixedNumber(tempFile, parameter.PagePerSize);
+            } else if (parameter.operation =="splitByRange")
+            {
+                response = await _pdfFile.ExtractPageRangeAndSave(tempFile , parameter.startRange,parameter.endRange);
+            }            
+
+
+            return new FileResponse
+            {
+                LockFile = response,
+                TempFile = tempFile,
+            };
+
+        }
+
 
         public async Task<FileResponse> FilePathForMerge(List<IFormFile> parameter)
         {

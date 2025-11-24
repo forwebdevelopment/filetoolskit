@@ -10,7 +10,16 @@ namespace Filetoolkits.domain.Entity
     public class FileForm
     {
         public IFormFile File { get; set; }
-        public List<IFormFile> Files { get; set; }
+    }
+
+    public class SplitFileParam:FileForm
+    {
+        public int PagePerSize { get; set; } = 0;
+
+        public int startRange { get; set; }=0;
+        public int endRange { get; set; } = 0;
+
+        public string operation { get; set; }
     }
     public class LockFileParameter: FileForm
     {
