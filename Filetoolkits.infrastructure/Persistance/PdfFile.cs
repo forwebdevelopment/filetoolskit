@@ -73,7 +73,7 @@ namespace Filetoolkits.infrastructure.Persistance
 
             try
             {
-                string outputPath = Path.Combine(Path.GetTempPath(), Guid.NewGuid() + ".pdf");
+                string outputPath = Path.Combine(Path.GetTempPath(), "quickfilemerge" + ".pdf");
 
                 using (PdfDocument finalDocument = new PdfDocument())
                 {
