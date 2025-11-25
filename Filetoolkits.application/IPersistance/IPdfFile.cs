@@ -13,5 +13,7 @@ namespace Filetoolkits.application.IPersistance
          Task<string> MergeMultiplePDFs(string[] filePaths);
          Task<string> SplitAndZipPdfByFixedNumber(string inputFilePath, int pagesPerFile = 4);
          Task<string> ExtractPageRangeAndSave(string inputFilePath, int startPage, int endPage);
+
+         Task<string> AddWaterMark(string inputFilePath , string waterMarkText);
     }
 }

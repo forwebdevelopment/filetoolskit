@@ -14,5 +14,6 @@ namespace Filetoolkits.application.IServices
         Task<FileResponse> FilePath(FileForm parameter);
         Task<FileResponse> FilePathForMerge(List<IFormFile> parameter);
         Task<FileResponse> splitFilePath(SplitFileParam parameter);
+        Task<FileResponse> FilePathForWaterMark(WaterMark parameter);
     }
 }

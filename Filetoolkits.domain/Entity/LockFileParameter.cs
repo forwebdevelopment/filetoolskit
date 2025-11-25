@@ -12,6 +12,10 @@ namespace Filetoolkits.domain.Entity
         public IFormFile File { get; set; }
     }
 
+    public class WaterMark:FileForm
+    {
+        public string watermarktext { get; set; }   
+    }
     public class SplitFileParam:FileForm
     {
         public int PagePerSize { get; set; } = 0;

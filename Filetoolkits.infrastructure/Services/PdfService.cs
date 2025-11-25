@@ -22,13 +22,7 @@ namespace Filetoolkits.infrastructure.Services
         public  async Task<FileResponse>  FilePath(FileForm parameter)
         {
 
-            string tempFolder = Path.GetTempPath();
-            string tempFile = Path.Combine(tempFolder, parameter.File.FileName);
-
-            using (var stream = new FileStream(tempFile, FileMode.Create))
-            {
-                await parameter.File.CopyToAsync(stream);
-            }
+            string tempFile = await TempFileStore(parameter.File);
 
             var response =  await _pdfFile.PdfCompression(tempFile);
 
@@ -42,16 +36,44 @@ namespace Filetoolkits.infrastructure.Services
         }
 
 
-        public async Task<FileResponse> splitFilePath(SplitFileParam parameter)
+        private async Task<string> TempFileStore(IFormFile filepath)
         {
-
             string tempFolder = Path.GetTempPath();
-            string tempFile = Path.Combine(tempFolder, parameter.File.FileName);
+            string tempFile = Path.Combine(tempFolder, filepath.FileName);
 
             using (var stream = new FileStream(tempFile, FileMode.Create))
             {
-                await parameter.File.CopyToAsync(stream);
+                await filepath.CopyToAsync(stream);
             }
+
+            return tempFile;
+        }
+
+
+
+        public async Task<FileResponse> FilePathForWaterMark(WaterMark parameter)
+        {
+
+            string tempFile = await TempFileStore(parameter.File);
+
+            var response = await _pdfFile.AddWaterMark(tempFile , parameter.watermarktext);
+
+
+            return new FileResponse
+            {
+                LockFile = response,
+                TempFile = tempFile,
+            };
+
+        }
+
+
+
+
+        public async Task<FileResponse> splitFilePath(SplitFileParam parameter)
+        {
+
+            string tempFile = await TempFileStore(parameter.File);
 
             var response = "";
             if (parameter.operation == "splitByPageSize")

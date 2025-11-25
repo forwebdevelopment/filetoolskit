@@ -1,5 +1,7 @@
 ﻿using Filetoolkits.application.IPersistance;
+using Syncfusion.Drawing;
 using Syncfusion.Pdf;
+using Syncfusion.Pdf.Graphics;
 using Syncfusion.Pdf.Parsing;
 using System;
 using System.Collections.Generic;
@@ -249,6 +251,58 @@ namespace Filetoolkits.infrastructure.Persistance
             }
 
             return outputFilePath;
+        }
+
+
+
+        public async  Task<string> AddWaterMark(string inputFilePath , string waterMarkText)
+        {
+            try
+            {
+                string outputpath = Path.Combine(Path.GetDirectoryName(inputFilePath), "watermark_"+Path.GetFileName(inputFilePath));
+
+                using (var fileStream = new FileStream(inputFilePath, FileMode.Open, FileAccess.Read))
+                using (PdfLoadedDocument loadedDocument = new PdfLoadedDocument(fileStream))
+                {
+                    // Iterate through all pages in the document
+                    foreach (PdfPageBase loadedPage in loadedDocument.Pages)
+                    {
+                        // Create PDF graphics for the current page.
+                        PdfGraphics graphics = loadedPage.Graphics;
+
+                        // Set the standard font.
+                        PdfFont font = new PdfStandardFont(PdfFontFamily.Helvetica, 30);
+
+                        // Add watermark text.
+                        // Save the current graphics state before applying transformations specific to the watermark.
+                        PdfGraphicsState state = graphics.Save();
+                        graphics.SetTransparency(0.25f);
+                        graphics.RotateTransform(-40); // Apply a rotation for the diagonal effect
+
+                        // Calculate position dynamically to cover the page center.
+                        // The Y coordinate is the vertical center of the page.
+                        float x = -150;
+                        float y = loadedPage.Size.Height / 2;
+
+                        graphics.DrawString(waterMarkText, font, PdfPens.Red, PdfBrushes.Red, new PointF(x, y));
+
+                        // Restore the graphics state to its original settings (removes transparency/rotation for the next page).
+                        graphics.Restore(state);
+                    }
+
+                    // Save the modified document.
+                    using (FileStream stream = new FileStream(outputpath, FileMode.Create, FileAccess.Write))
+                    {
+                        loadedDocument.Save(stream);
+                    }
+                }
+
+
+                return outputpath;
+            }catch(Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
         }
     }
 

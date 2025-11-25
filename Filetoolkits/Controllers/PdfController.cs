@@ -1,6 +1,7 @@
 ﻿using Filetoolkits.application.IServices;
 using Filetoolkits.application.PdfFile;
 using Filetoolkits.application.PdfFile.mergepdf;
+using Filetoolkits.application.PdfFile.watermarks;
 using Filetoolkits.domain.Entity;
 using MediatR;
 using Microsoft.AspNetCore.Http;
@@ -50,6 +51,46 @@ namespace Filetoolkits.Controllers
             return File(protectedBytes, "application/pdf", Path.GetFileName(response.LockFile));
         }
 
+
+        [HttpPost("watermark")]
+        public async Task<IActionResult> AddWaterMark(WaterMark watermark)
+        {
+            try
+            {
+
+                if(watermark.File==null || watermark.File.Length == 0)
+                {
+                    return BadRequest("file is not uploaded");
+                }
+                var responce = await _mediator.Send(new watermarkQuery(new WaterMark()
+                {
+                    File = watermark.File,
+                    watermarktext = watermark.watermarktext
+                }));
+
+                var fileInByte = await System.IO.File.ReadAllBytesAsync(responce.LockFile);
+
+                Response.OnCompleted(() =>
+                {
+                    try
+                    {
+                    if (System.IO.File.Exists(responce.LockFile)) { System.IO.File.Delete(responce.LockFile) ; }
+                        if (System.IO.File.Exists(responce.TempFile)) { System.IO.File.Delete(responce.TempFile) ; }
+                    }
+                    catch { }
+
+                    return Task.CompletedTask;
+                });
+
+                return File(fileInByte, "application/pdf" , Path.GetFileName(responce.LockFile));
+            }
+            catch (Exception ex)
+            {
+                
+                    throw new Exception(ex.Message);
+                
+            }
+        }
 
         [HttpPost("merge")]
         public async Task<IActionResult> MergePdf(List<IFormFile> files)
