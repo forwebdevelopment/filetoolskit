@@ -36,6 +36,18 @@ namespace Filetoolkits.infrastructure.Services
         }
 
 
+        public async Task<FileResponse> PdfA(FileForm param)
+        {
+            string tempFile = await TempFileStore(param.File);
+            var response = await _pdfFile.ConvertPdfToPdfA(tempFile);
+            return new FileResponse
+            {
+                LockFile = response,
+                TempFile = tempFile,
+            };
+
+        }
+
         private async Task<string> TempFileStore(IFormFile filepath)
         {
             string tempFolder = Path.GetTempPath();

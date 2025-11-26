@@ -1,6 +1,7 @@
 ﻿using Filetoolkits.application.IServices;
 using Filetoolkits.application.PdfFile;
 using Filetoolkits.application.PdfFile.mergepdf;
+using Filetoolkits.application.PdfFile.PdfToPdfA;
 using Filetoolkits.application.PdfFile.watermarks;
 using Filetoolkits.domain.Entity;
 using MediatR;
@@ -17,8 +18,6 @@ namespace Filetoolkits.Controllers
         public PdfController(IMediator mediator)
         {
             _mediator = mediator;
-               
-        
         }  
 
 
@@ -210,6 +209,42 @@ namespace Filetoolkits.Controllers
                 return StatusCode(500, $"An error occurred: {ex.Message}");
             }
            
+        }
+
+
+        [HttpPost("PdfToPdfA")]
+        public async Task<IActionResult> PdfToPdfA(IFormFile file)
+        {
+            try
+            {
+               if(file == null || file.Length == 0)
+                {
+                    return BadRequest("File Not Uploaded");
+                }
+
+            var res = await  _mediator.Send(new PdfToPDFAQuery( new FileForm
+                {
+                    File = file
+                }));
+
+                Response.OnCompleted(() =>
+                {
+                    if (System.IO.File.Exists(res.LockFile)) { System.IO.File.Delete(res.LockFile); }
+                    if (System.IO.File.Exists(res.TempFile)) { System.IO.File.Delete(res.TempFile); }
+
+                    return Task.CompletedTask;
+
+                });
+
+                var fileInByte = await System.IO.File.ReadAllBytesAsync(res.LockFile);
+
+                return File(fileInByte, "application/pdf", Path.GetFileName(res.LockFile));
+            }
+            catch (Exception ex) {
+
+                throw new Exception(ex.Message);
+            
+            }
         }
     }
 

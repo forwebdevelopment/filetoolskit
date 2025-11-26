@@ -314,7 +314,7 @@ namespace Filetoolkits.infrastructure.Persistance
         {
             try
             {
-                string outputPath = Path.Combine(Path.GetDirectoryName(inputFilePath), "Pdf/A" + Path.GetFileName(inputFilePath));
+                string outputPath = Path.Combine(Path.GetDirectoryName(inputFilePath), "Pdf_A" + Path.GetFileName(inputFilePath));
 
                 using(var filestream = new FileStream(inputFilePath , FileMode.Open, FileAccess.Read))
                 using (PdfLoadedDocument loadedDocument = new PdfLoadedDocument(filestream))
