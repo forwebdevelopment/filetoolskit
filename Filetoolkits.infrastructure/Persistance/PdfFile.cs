@@ -1,4 +1,5 @@
 ﻿using Filetoolkits.application.IPersistance;
+using Filetoolkits.infrastructure.Services;
 using Syncfusion.Drawing;
 using Syncfusion.Pdf;
 using Syncfusion.Pdf.Graphics;
@@ -6,6 +7,7 @@ using Syncfusion.Pdf.Parsing;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.IO.Compression;
 using System.Linq;
 using System.Text;
@@ -295,6 +297,7 @@ namespace Filetoolkits.infrastructure.Persistance
                     {
                         loadedDocument.Save(stream);
                     }
+                    loadedDocument.Close(true);
                 }
 
 
@@ -303,6 +306,41 @@ namespace Filetoolkits.infrastructure.Persistance
             {
                 throw new Exception(ex.Message);
             }
+        }
+
+
+
+        public async Task<string> ConvertPdfToPdfA(string inputFilePath)
+        {
+            try
+            {
+                string outputPath = Path.Combine(Path.GetDirectoryName(inputFilePath), "Pdf/A" + Path.GetFileName(inputFilePath));
+
+                using(var filestream = new FileStream(inputFilePath , FileMode.Open, FileAccess.Read))
+                using (PdfLoadedDocument loadedDocument = new PdfLoadedDocument(filestream))
+                {
+                    loadedDocument.SubstituteFont += PDFAService.LoadedDocument_SubstituteFont;
+                    loadedDocument.ConvertToPDFA(PdfConformanceLevel.Pdf_A1B);
+
+
+                    using (FileStream stream = new FileStream(outputPath, FileMode.Create, FileAccess.Write))
+                    {
+                        loadedDocument.Save(stream);
+                    }
+
+                    loadedDocument.Close(true);
+                }
+
+
+                return outputPath;
+
+            }
+            catch(Exception ex) 
+            {
+                throw new Exception(ex.Message);
+            
+            }
+
         }
     }
 

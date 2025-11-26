@@ -15,5 +15,6 @@ namespace Filetoolkits.application.IPersistance
          Task<string> ExtractPageRangeAndSave(string inputFilePath, int startPage, int endPage);
 
          Task<string> AddWaterMark(string inputFilePath , string waterMarkText);
+         Task<string> ConvertPdfToPdfA(string inputFilePath);
     }
 }
