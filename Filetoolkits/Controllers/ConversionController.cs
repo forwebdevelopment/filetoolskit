@@ -16,25 +16,20 @@ namespace Filetoolkits.Controllers
 
         public ConversionController(IMediator mediator)
         {
-            _mediator=mediator;
+            _mediator = mediator;
         }
-
-
         [HttpPost]
-        public async Task<IActionResult> LockPdfFile(IFormFile file, [FromForm]  string conversionType ,string fileReturnType)
+        public async Task<IActionResult> LockPdfFile(IFormFile file, [FromForm] string conversionType, string fileReturnType)
         {
             if (file == null || file.Length == 0)
             {
                 return BadRequest("No file uploaded");
             }
-
-
             //    string response = await _services.LockFiles(file,password,"PDF");
             FileResponse response = await _mediator.Send(new FileConversionQuery(new FileConversionParameter
             {
                 File = file,
                 conversionType = conversionType
-
             }));
             var protectedBytes = await System.IO.File.ReadAllBytesAsync(response.LockFile); // must read response.Files  , here LockFile is just name 
 
@@ -53,12 +48,7 @@ namespace Filetoolkits.Controllers
                 return Task.CompletedTask;
             });
             return await ReturnFile(fileReturnType, protectedBytes, response.LockFile);
-
-
         }
-
-
-
         private async Task<IActionResult> ReturnFile(string fileType, byte[] protectedBytes, string filePath)
         {
             switch (fileType.ToUpper())
