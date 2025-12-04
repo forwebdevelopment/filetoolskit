@@ -12,7 +12,8 @@ EXPOSE 8081
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
-COPY ["Filetoolkits/Filetoolkits.csproj", "Filetoolkits/"]
+#COPY ["Filetoolkits/Filetoolkits.csproj", "Filetoolkits/"]
+COPY ["Filetoolkits.csproj", "."]
 RUN dotnet restore "./Filetoolkits/Filetoolkits.csproj"
 COPY . .
 WORKDIR "/src/Filetoolkits"
