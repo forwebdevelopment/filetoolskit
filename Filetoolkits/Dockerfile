@@ -1,4 +1,3 @@
-
 FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS base
 WORKDIR /app
 EXPOSE 8080
@@ -10,11 +9,10 @@ ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
 
 # 1. Copy the solution file first to allow Docker to cache layers efficiently.
-# Assuming the solution file is in the repository root directory (the build context)
-COPY ["*.sln", "./"]
+# Use the specific file name now:
+COPY Filetoolkits.sln ./
 
 # 2. Copy all project files (*.csproj) while maintaining the original directory structure
-# This allows 'dotnet restore' to resolve project-to-project references correctly.
 # The paths here are relative to the build context (root of repo)
 COPY ["Filetoolkits/Filetoolkits.csproj", "Filetoolkits/"]
 COPY ["Filetoolkits.application/Filetoolkits.application.csproj", "Filetoolkits.application/"]
