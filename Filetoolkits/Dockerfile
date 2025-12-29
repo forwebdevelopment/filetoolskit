@@ -1,4 +1,4 @@
-# Base runtime image (Cloud Run)
+# Base runtime image for Cloud Run
 FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS base
 WORKDIR /app
 ENV ASPNETCORE_URLS=http://+:8080
@@ -9,16 +9,18 @@ FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
 
-# Copy csproj and restore
+# Copy csproj and restore (IMPORTANT PATH)
 COPY ["Filetoolkits/Filetoolkits.csproj", "Filetoolkits/"]
 RUN dotnet restore "Filetoolkits/Filetoolkits.csproj"
 
-# Copy remaining files and build
+# Copy remaining files
 COPY . .
+
+# Build
 WORKDIR "/src/Filetoolkits"
 RUN dotnet build "Filetoolkits.csproj" -c $BUILD_CONFIGURATION -o /app/build
 
-# Publish stage
+# Publish
 FROM build AS publish
 ARG BUILD_CONFIGURATION=Release
 RUN dotnet publish "Filetoolkits.csproj" \
@@ -26,7 +28,7 @@ RUN dotnet publish "Filetoolkits.csproj" \
     -o /app/publish \
     /p:UseAppHost=false
 
-# Final image
+# Final runtime image
 FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
