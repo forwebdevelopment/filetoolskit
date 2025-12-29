@@ -21,4 +21,8 @@
     <ProjectReference Include="..\Filetoolkits.infrastructure\Filetoolkits.infrastructure.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="NewFolder\" />
+  </ItemGroup>
+
 </Project>
