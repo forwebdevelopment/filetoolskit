@@ -1,5 +1,5 @@
 # ===============================
-# Base runtime image
+# Runtime image
 # ===============================
 FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS base
 WORKDIR /app
@@ -7,24 +7,24 @@ ENV ASPNETCORE_URLS=http://+:8080
 EXPOSE 8080
 
 # ===============================
-# Build stage
+# Build image
 # ===============================
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 WORKDIR /src
 
-# Copy csproj files first (for better caching)
+# Copy project files (paths are from repo root!)
 COPY Filetoolkits/Filetoolkits.csproj Filetoolkits/
 COPY Filetoolkits.application/Filetoolkits.application.csproj Filetoolkits.application/
 COPY Filetoolkits.domain/Filetoolkits.domain.csproj Filetoolkits.domain/
 COPY Filetoolkits.infrastructure/Filetoolkits.infrastructure.csproj Filetoolkits.infrastructure/
 
-# Restore dependencies
+# Restore
 RUN dotnet restore Filetoolkits/Filetoolkits.csproj
 
-# Copy everything else
+# Copy everything
 COPY . .
 
-# Build & publish
+# Publish
 WORKDIR /src/Filetoolkits
 RUN dotnet publish Filetoolkits.csproj \
     -c Release \
