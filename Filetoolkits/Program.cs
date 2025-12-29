@@ -31,14 +31,13 @@ builder.Services.AddScoped<IFileConversion, FileConversion>();
 builder.Services.AddScoped<IfileConversionService, fileConversionService>();
 SyncfusionLicenseProvider.RegisterLicense("Ngo9BigBOggjHTQxAR8/V1NDaF5cWWtCf1FpRmJGdld5fUVHYVZUTXxaS00DNHVRdkdmWH5fcHRURmFeVkBwXERWYU4=");
 var app = builder.Build();
-if (app.Environment.IsDevelopment())
-{
+
     app.UseSwagger();
     app.UseSwaggerUI(c =>
     {
         c.SwaggerEndpoint("/swagger/v1/swagger.json", "My API V1");
     });
-}
+
 //if (app.Environment.IsDevelopment())
 //{
 
@@ -47,7 +46,7 @@ if (app.Environment.IsDevelopment())
 
 app.UseCors("policy");
 
-//app.UseHttpsRedirection();
+app.UseHttpsRedirection();
 
 app.UseAuthorization();
 
